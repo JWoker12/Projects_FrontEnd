@@ -27,6 +27,7 @@
                             <th>Task</th>
                             <th>Description</th>
                             <th>State</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,11 +36,22 @@
                             <td>{{ task.name }}</td>
                             <td>{{ task.description }}</td>
                             <td>{{ task.state }}</td>
+                            <td>
+                                <router-link class="btn btn-warning btn-sm" 
+                                    :to="{
+                                        name: 'form-task', 
+                                        params: {
+                                            action: 'Edit', edit: 'api/project/task/update/', dataTask: task
+                                        }
+                                    }">
+                                    <i class="bi bi-pencil-square" />
+                                </router-link>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
                 <router-link class="btn btn-primary btn-sm"
-                :to="{name: 'create-task', params: {id: project.id}}">Create new task</router-link>
+                :to="{name: 'form-task', params: {id: project.id}}">Create new task</router-link>
             </div>
         </div>
     </div>
@@ -56,18 +68,17 @@ export default {
     },
     mounted() {
         axios
-            .get("http://localhost:8001/api/project/" + this.id, this.$store.getters.config)
+            .get("/api/project/"+ this.id)
             .then((response) => {
                 this.error = false
                 this.project = response.data.data
             })
-            .catch((error) => this.project = error.response.statusText)
+            .catch((error) => this.project = error.response?.statusText)
     },
     methods: {
         deleteProject(){
             axios
-                .delete("http://localhost:8001/api/project/" + this.id +"/delete", 
-                    this.$store.getters.config)
+                .delete("/api/project/" + this.id +"/delete")
                 .then((response) => console.log(response.data))
                 .catch((error) => {
                     console.log(error);

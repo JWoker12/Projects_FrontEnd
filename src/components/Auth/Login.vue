@@ -1,14 +1,14 @@
 <template>
     <div class="card">
         <div class="card-body">
-            <form v-on:submit.prevent="accessSession">
+            <form v-on:submit.prevent="signIn">
                 <h3>Sign In</h3>
                 <div class="form-group">
                     <label>Email address</label>
                     <input
                         type="email"
                         class="form-control"
-                        v-model="login.email"
+                        v-model="formLogin.email"
                     />
                 </div>
                 <div class="form-group">
@@ -16,7 +16,7 @@
                     <input
                         type="current-password"
                         class="form-control"
-                        v-model="login.password"
+                        v-model="formLogin.password"
                     />
                 </div>
                 <div class="my-3">
@@ -27,30 +27,20 @@
     </div>
 </template>
 <script>
-import axios from "axios";
-import { mapMutations } from "vuex";
+import { mapActions } from "vuex";
 export default {
     data() {
         return {
-            login: {
+            formLogin: {
                 email: "",
                 password: "",
             },
         };
     },
     methods: {
-        ...mapMutations(["setUser", "setToken"]),
-        accessSession() {
-            axios
-                .post("http://localhost:8001/api/login", this.login)
-                .then((response) => {
-                    this.setUser(response.data.user);
-                    this.setToken(response.data.token);
-                    this.$store.loggedIn = true
-                    console.log(this.$store.loggedIn)
-                    this.$router.push({name: 'home'})
-                })
-                .catch((err) => console.log(err));
+        ...mapActions({sendCredentials: "singIn"}),
+        async signIn() {
+            await this.sendCredentials({url: '/api/login', credentials: this.formLogin});
         },
     },
 };
